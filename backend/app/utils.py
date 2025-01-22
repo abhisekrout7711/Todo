@@ -9,25 +9,23 @@ class SessionManager:
         self.session = None
         self.__db_url = f"postgresql://{username}:{password}@{host}:{port}/{database}"
 
-    @property
-    def session(self) -> Session:
+    def get_session(self) -> Session:
         """
         A property that returns the session object if it exists, otherwise creates a new session and returns it
 
         Raises:
             RuntimeError: If session creation fails
         """
-        if self.session:
-            return self.session
-        
-        # Create a new session if there is no existing session
-        try:
-            engine = create_engine(self.__db_url)
-            self.session = sessionmaker(bind=engine).Session()
-            return self.session
-        
-        except Exception as e:
-            raise RuntimeError("Session creation failed") from e
+        if not self.session:
+            # Create a new session if there is no existing session
+            try:
+                engine = create_engine(self.__db_url)
+                self.session = sessionmaker(bind=engine)()
+            
+            except Exception as e:
+                raise RuntimeError(f"Session creation failed - {e}") from e
+            
+        return self.session
     
     def close_session(self):
         """Closes the database session and disposes the engine"""

@@ -9,7 +9,7 @@ from backend.app.schemas import User, Tag, Task
 
 class UserData:
     def __init__(self):
-        self.session = SessionManager(**DB_CONFIG).session
+        self.session = SessionManager(**DB_CONFIG).get_session()
 
     def get_user(self, email: str) -> Union[User, dict]:
         """Read and return data from the db filter by email"""
@@ -67,7 +67,7 @@ class UserData:
 
 class TagData:
     def __init__(self):
-        self.session = SessionManager(**DB_CONFIG).session
+        self.session = SessionManager(**DB_CONFIG).get_session()
         
     def get_tag(self, name: str) -> Union[Tag, dict]:
         """Read and return data from the db filter by name"""
