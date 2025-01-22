@@ -139,12 +139,12 @@ class TaskData:
     def __init__(self):
         self.session = SessionManager(**DB_CONFIG).get_session()
 
-    def create_task(self, user_id: int, title: str, description: str=None, tag: str=None, due_date: str=None, priority: TaskPriority=None) -> dict:
+    def create_task(self, user_id: int, title: str, description: str=None, tag: str=None, due_date: str=None, priority: str=None) -> dict:
         """Creates a new task for a user"""
         
-        data = UserData().get_user(user_id=user_id)
-        if isinstance(data, dict):
-            return data
+        user_data = UserData().get_user(user_id=user_id)
+        if isinstance(user_data, dict):
+            return user_data
 
         try:
             new_task = Task(user_id=user_id, title=title)
@@ -154,9 +154,10 @@ class TaskData:
                 new_task.description = description
 
             if tag:
-                data = TagData().get_tag(tag=tag)
-                if isinstance(data, dict):
-                    return data
+                tag_data = TagData().get_tag(tag=tag)
+                if isinstance(tag_data, dict):
+                    return tag_data
+                
                 new_task.tag = tag
 
             if due_date:
@@ -175,7 +176,7 @@ class TaskData:
     
     def update_task(
             self, user_id: int, task_id: int, title: str=None, description: str=None,
-            tag: str=None, due_date: str=None, priority: TaskPriority=None, status: TaskStatus=None
+            tag: str=None, due_date: str=None, priority: str=None, status: str=None
         ) -> dict:
         """Updates the task with the new title, description, status and tag if the task exists"""
         
@@ -190,11 +191,10 @@ class TaskData:
             if description:
                 data.description = description
             
-            breakpoint()
             if tag:
-                data = TagData().get_tag(tag=tag)
-                if isinstance(data, dict):
-                    return data
+                tag_data = TagData().get_tag(tag=tag)
+                if isinstance(tag_data, dict):
+                    return tag_data
                 
                 data.tag = tag
             
@@ -311,28 +311,14 @@ if __name__=="__main__":
     # print(data)
 
     obj = TaskData()
-    data = obj.get_task(user_id=1, task_id=1)
-    print(data)
+    # data = obj.get_task(user_id=1, task_id=1)
+    # print(data)
     
     # data = obj.create_task(user_id=1, title="Task 1", description="Description 1", due_date="2023-01-01", tag="Work")
-    data = obj.update_task(user_id=1, task_id=1, title="Random", description="Description Random", tag="Work", priority=TaskPriority.High, status=TaskStatus.Completed)
-    breakpoint()
-
-
-    data = obj.get_all_tasks(user_id=1)
-    print(data)
-
-    data = obj.get_tasks_by_tag(user_id=1, tag="Work")
-    print(data)
-
-    data = obj.get_tasks_by_status(user_id=1, status=TaskStatus.Completed)
-    print(data)
-
-    data = obj.get_tasks_by_priority(user_id=1, priority=TaskPriority.High)
-    print(data)
-
-    data = obj.search_tasks_by_text(user_id=1, text="Task")
-    print(data)
-
-    data = obj.auto_update_task_status_to_overdue()
+    # data = obj.update_task(user_id=1, task_id=1, title="Random", description="Description Random", tag="Work", priority=TaskPriority.High.value, status=TaskStatus.Completed.value)
+    
+    # data = obj.get_tasks_by_status(user_id=1, status=TaskStatus.Completed.value)
+    # print(data)
+    
+    data = obj.get_tasks_by_priority(user_id=1, priority=TaskPriority.High.value)
     print(data)
