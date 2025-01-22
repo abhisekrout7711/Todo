@@ -11,11 +11,17 @@ class UserData:
     def __init__(self):
         self.session = SessionManager(**DB_CONFIG).get_session()
 
-    def get_user(self, email: str) -> Union[User, dict]:
+    def get_user(self, user_id: int=None, email: str=None) -> Union[User, dict]:
         """Read and return data from the db filter by email"""
-        data = self.session.query(User).filter_by(email=email).first()
+        if email:
+            data = self.session.query(User).filter_by(email=email).first()
+
+        if user_id:
+            data = self.session.query(User).filter_by(user_id=user_id).first()
+
         if not data:
             return {"error":"User doesn't exist", "status_code": 404}
+        
         return data
 
     def add_user(self, email: str, password: str) -> dict:
@@ -39,14 +45,14 @@ class UserData:
         data = self.get_user(user_id)
         if isinstance(data, dict):
             return data
-
+        
         if new_email:
             data.email = new_email
         
         if new_password:
             new_password_hash = hash_password(new_password)
             data.password_hash = new_password_hash
-
+        
         self.session.commit()
         return {"message": "Password updated successfully", "status_code": 200}
     
@@ -120,16 +126,18 @@ class TagData:
 
 if __name__=="__main__":
     obj = UserData()
-    breakpoint()
-    obj.add_user("user1@gmail.com", "password")
-    obj.add_user("user2@gmail.com", "password")
     
-    obj.get_user(email="user1@gmail.com")
-    obj.get_user(email="user2@gmail.com")
+    # obj.add_user("user1@gmail.com", "password")
+    # breakpoint
+    # obj.add_user("user2@gmail.com", "password")
+    
+    data = obj.get_user(email="user1@gmail.com")
+    data = obj.get_user(email="user2@gmail.com")
+
+    breakpoint()
     obj.update_user(user_id=1, new_email="user1_new@gmail.com", new_password="new_password")
+    
     obj.update_user(user_id=2, new_password="new_password")    
 
-    obj = TagData()
-    obj.get_tag("Work")
 
    
