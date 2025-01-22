@@ -27,7 +27,7 @@ class Tag(Base):
     name = Column(String(255), primary_key=True, nullable=False)
 
     # Relationship to access tasks of the tag
-    tasks = relationship('Task', back_populates='tag', cascade='all, delete-orphan')
+    tasks = relationship('Task', back_populates='tag')
 
     def __repr__(self):
         return f"<Tag(tag={self.name})>"
@@ -38,7 +38,7 @@ class Task(Base):
 
     task_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)  # Link to User table
-    tag = Column(String(255), ForeignKey('tags.name'))
+    tag = Column(String(255), ForeignKey('tags.name', ondelete='SET NULL'))
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(Enum('Pending', 'In Progress', 'Completed', 'Overdue', name="todo_task_status"), default='Pending')
