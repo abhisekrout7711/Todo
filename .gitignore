@@ -1,0 +1,7 @@
+# Bytecode files
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+dev_env/

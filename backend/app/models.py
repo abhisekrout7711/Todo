@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Text, Enum, TIMESTAMP, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base, validate
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from backend.app.database import get_database_connection
 
 Base = declarative_base()
 
@@ -18,7 +19,7 @@ class User(Base):
     tasks = relationship('Task', back_populates='user')
 
     def __repr__(self):
-        return f"<User(user_id={self.user_id}, email={self.email})>"
+        return f"<User(user_id={self.user_}, email={self.email})>"
 
 class Tag(Base):
     __tablename__ = 'tags'
@@ -55,37 +56,41 @@ class Task(Base):
 
 
 if __name__=="__main__":
-    from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
 
     # Set up the database engine and session
-    engine = create_engine('sqlite:///example.db')  # Replace with your database URL
+    engine = get_database_connection()
+
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # Create a new user
-    new_user = User(email="user@example.com", password_hash="hashedpassword")
-    session.add(new_user)
+    # # Create a new user
+    # new_user = User(email="user2@xyz.com", password_hash="hashedpassword")
+    # session.add(new_user)
 
-    # Create a new tag
-    new_tag = Tag(name="Work")
-    session.add(new_tag)
+    # session.commit()
+    # # Create a new tag
+    # new_tag = Tag(name="Personal")
+    # session.add(new_tag)
 
-    # Create a new task
-    new_task = Task(
-        user_id=new_user.user_id, 
-        tag_id=new_tag.tag_id, 
-        title="Complete project", 
-        description="Finish the project by end of the week", 
-        status="Pending", 
-        priority="High"
-    )
-    session.add(new_task)
+    # session.commit()
 
-    # Commit the transaction
-    session.commit()
+    # # Create a new task
+    # new_task = Task(
+    #     user_id=new_user.user_id, 
+    #     tag_id=new_tag.tag_id, 
+    #     title="Complete project", 
+    #     description="Random", 
+    #     status="Pending", 
+    #     priority="High"
+    # )
+    # session.add(new_task)
+
+    # # Commit the transaction
+    # session.commit()
 
     # Query and print tasks for the user
-    tasks_for_user = session.query(Task).filter_by(user_id=new_user.user_id).all()
+    tasks_for_user = session.query(Task).all()
     for task in tasks_for_user:
+        breakpoint()
         print(task)
