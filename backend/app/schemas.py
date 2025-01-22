@@ -45,7 +45,7 @@ class Task(Base):
     due_date = Column(TIMESTAMP, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
-    priority = Column(Enum('Low', 'Medium', 'High', name="todo_task_priority"), default='Medium')
+    priority = Column(Enum('Low', 'Medium', 'High', name="todo_task_priority"), default='Medium', nullable=False)
 
     # Relationship to the User model
     user = relationship('User', back_populates='tasks')
