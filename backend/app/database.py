@@ -5,8 +5,7 @@ from datetime import datetime
 # Local Imports
 from config_file import DB_CONFIG
 from backend.app.utils import SessionManager, hash_password
-from backend.app.schemas import User, Tag, Task
-from backend.app.models import TaskStatus, TaskPriority
+from backend.app.schemas import User, Tag, Task, TaskStatus, TaskPriority
 
 
 class UserData:
@@ -283,42 +282,42 @@ class TaskData:
 
 
 if __name__=="__main__":
-    # obj = UserData()
+    obj = UserData()
     
-    # obj.add_user("user1@gmail.com", "password")
-    # obj.add_user("user2@gmail.com", "password")
+    obj.add_user("user1@gmail.com", "password")
+    obj.add_user("user2@gmail.com", "password")
     
-    # data = obj.get_user(email="user1@gmail.com")
-    # data = obj.get_user(email="user2@gmail.com")
+    data = obj.get_user(email="user1@gmail.com")
+    data = obj.get_user(email="user2@gmail.com")
 
     
-    # obj.update_user(user_id=1, new_email="user1_new@gmail.com", new_password="new_password")
-    # obj.update_user(user_id=2, new_password="new_password")    
+    obj.update_user(user_id=1, new_email="user1_new@gmail.com", new_password="new_password")
+    obj.update_user(user_id=2, new_password="new_password")    
 
-    # data= obj.delete_user(user_id=2)
+    data= obj.delete_user(user_id=2)
 
-    # obj = TagData()
-    # obj.add_tag("Work")
-    # obj.add_tag("Personal")
-    # obj.add_tag("Home")
+    obj = TagData()
+    obj.add_tag("Work")
+    obj.add_tag("Personal")
+    obj.add_tag("Home")
 
-    # data = obj.get_tag(tag="Work")
-    # data = obj.delete_tag(tag="Personal")
+    data = obj.get_tag(tag="Work")
+    data = obj.delete_tag(tag="Personal")
 
-    # obj = TagData()
-    # data = obj.update_tag(tag="Home", new_tag="Family")
+    obj = TagData()
+    data = obj.update_tag(tag="Home", new_tag="Family")
 
-    # print(data)
+    print(data)
 
     obj = TaskData()
-    # data = obj.get_task(user_id=1, task_id=1)
-    # print(data)
+    data = obj.get_task(user_id=1, task_id=1)
+    print(data)
     
-    # data = obj.create_task(user_id=1, title="Task 1", description="Description 1", due_date="2023-01-01", tag="Work")
-    # data = obj.update_task(user_id=1, task_id=1, title="Random", description="Description Random", tag="Work", priority=TaskPriority.High.value, status=TaskStatus.Completed.value)
+    data = obj.create_task(user_id=1, title="Task 1", description="Description 1", due_date="2023-01-01", tag="Work")
+    data = obj.update_task(user_id=1, task_id=1, title="Random", description="Description Random", tag="Work", priority=TaskPriority.High.value, status=TaskStatus.Completed.value)
     
-    # data = obj.get_tasks_by_status(user_id=1, status=TaskStatus.Completed.value)
-    # print(data)
+    data = obj.get_tasks_by_status(user_id=1, status=TaskStatus.Completed.value)
+    print(data)
     
     data = obj.get_tasks_by_priority(user_id=1, priority=TaskPriority.High.value)
     print(data)
