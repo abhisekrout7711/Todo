@@ -97,14 +97,14 @@ class TagData:
         except Exception as e:
             return {"error": f"Error adding new tag - {e}", "status_code": 400}
 
-    def update_tag(self, tag: str, new_name: str=None) -> dict:
+    def update_tag(self, tag: str, new_tag: str=None) -> dict:
         """Updates the tag with the new name if the tag exists"""
         data = self.get_tag(tag=tag)
         if isinstance(data, dict):
             return data
 
-        if new_name:
-            data.name = new_name
+        if new_tag:
+            data.tag = new_tag
 
         self.session.commit()
         return {"message": "Tag updated successfully", "status_code": 200}
@@ -125,21 +125,29 @@ class TagData:
 
 
 if __name__=="__main__":
-    obj = UserData()
+    # obj = UserData()
     
     # obj.add_user("user1@gmail.com", "password")
-    # breakpoint
     # obj.add_user("user2@gmail.com", "password")
     
-    data = obj.get_user(email="user1@gmail.com")
-    data = obj.get_user(email="user2@gmail.com")
+    # data = obj.get_user(email="user1@gmail.com")
+    # data = obj.get_user(email="user2@gmail.com")
 
     
-    obj.update_user(user_id=1, new_email="user1_new@gmail.com", new_password="new_password")
-    obj.update_user(user_id=2, new_password="new_password")    
+    # obj.update_user(user_id=1, new_email="user1_new@gmail.com", new_password="new_password")
+    # obj.update_user(user_id=2, new_password="new_password")    
 
-    breakpoint()
-    data= obj.delete_user(user_id=2)
+    # data= obj.delete_user(user_id=2)
+
+    # obj = TagData()
+    # obj.add_tag("Work")
+    # obj.add_tag("Personal")
+    # obj.add_tag("Home")
+
+    # data = obj.get_tag(tag="Work")
+    # data = obj.delete_tag(tag="Personal")
+
+    obj = TagData()
+    data = obj.update_tag(tag="Home", new_tag="Family")
+
     print(data)
-
-   
