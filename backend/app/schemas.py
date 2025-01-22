@@ -24,13 +24,13 @@ class User(Base):
 class Tag(Base):
     __tablename__ = 'tags'
 
-    name = Column(String(255), primary_key=True, nullable=False)
+    tag = Column(String(255), primary_key=True, nullable=False)
 
     # Relationship to access tasks of the tag
-    tasks = relationship('Task', back_populates='tag')
+    tasks = relationship('Task', back_populates='tag_relation')
 
     def __repr__(self):
-        return f"<Tag(tag={self.name})>"
+        return f"<Tag(tag={self.tag})>"
 
 
 class Task(Base):
@@ -38,7 +38,7 @@ class Task(Base):
 
     task_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)  # Link to User table
-    tag = Column(String(255), ForeignKey('tags.name', ondelete='SET NULL'))
+    tag = Column(String(255), ForeignKey('tags.tag', ondelete='SET NULL'))  # Link to Tag table
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(Enum('Pending', 'In Progress', 'Completed', 'Overdue', name="todo_task_status"), default='Pending')
@@ -51,7 +51,7 @@ class Task(Base):
     user = relationship('User', back_populates='tasks')
 
     # Relationship to the Tag model
-    tag_relation = relationship('Tag', back_populates='tasks')
+    tag_relation = relationship('Tag', back_populates='tasks', passive_deletes=True)
 
     def __repr__(self):
         return f"<Task(task_id={self.task_id}, title={self.title}, status={self.status}, tag={self.tag})>"
