@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+from passlib.context import CryptContext
 
 
 class SessionManager:
@@ -38,6 +39,7 @@ class SessionManager:
             self.engine = None
     
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str):
-    """Hashes the user's password"""
-    return password
+    """Hashes and returns the user's password"""
+    return pwd_context.hash(password)
