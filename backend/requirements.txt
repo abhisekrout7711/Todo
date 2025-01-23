@@ -2,3 +2,7 @@ fastapi
 sqlalchemy
 alembic
 passlib
+uvicorn
+bcrypt
+pyjwt
+python-multipart

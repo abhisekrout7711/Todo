@@ -1,8 +1,8 @@
-"""Initial migration
+"""Initial  migration
 
-Revision ID: 8b3465b864e5
+Revision ID: 4540fd2487f2
 Revises: 
-Create Date: 2025-01-22 23:58:09.584917
+Create Date: 2025-01-23 02:43:16.135823
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '8b3465b864e5'
+revision: str = '4540fd2487f2'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -39,11 +39,11 @@ def upgrade() -> None:
     sa.Column('tag', sa.String(length=255), nullable=True),
     sa.Column('title', sa.String(length=255), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('status', sa.Enum('Pending', 'In Progress', 'Completed', 'Overdue', name='todo_task_status'), nullable=True),
+    sa.Column('status', sa.Enum('Pending', 'Completed', 'InProgress', 'Overdue', name='taskstatus'), nullable=True),
     sa.Column('due_date', sa.TIMESTAMP(), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
-    sa.Column('priority', sa.Enum('Low', 'Medium', 'High', name='todo_task_priority'), nullable=True),
+    sa.Column('priority', sa.Enum('Low', 'Medium', 'High', name='taskpriority'), nullable=False),
     sa.ForeignKeyConstraint(['tag'], ['tags.tag'], ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
     sa.PrimaryKeyConstraint('task_id')

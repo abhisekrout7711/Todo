@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+import hashlib
 
 
 class SessionManager:
@@ -39,5 +40,5 @@ class SessionManager:
     
 
 def hash_password(password: str):
-    """Hashes the user's password"""
-    return password
+        """Hashes and returns the user's password deterministically"""
+        return hashlib.sha256(password.encode('utf-8')).hexdigest()
