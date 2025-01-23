@@ -88,6 +88,11 @@ class TagData:
             return {"error":"Tag doesn't exist", "status_code": 404}
         return data
     
+    def get_all_tags(self, user_id: int) -> List[Tag]:
+        """Returns all tags for a user"""
+        data = self.session.query(Tag).filter_by(user_id=user_id).all()
+        return data
+    
     def add_tag(self, tag: str) -> dict:
         """Adds new tag to the db if the tag doesn't already exist"""
         data = self.get_tag(tag=tag)
