@@ -1,15 +1,18 @@
-
-
-from fastapi import APIRouter, HTTPException, Depends
-from backend.app.database import UserData
-from backend.app.schemas import User
-from backend.app.utils import hash_password
-import jwt
-from config_file import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from backend.app.models import Token
+# Standard Imports
 from datetime import datetime, timedelta, timezone
 
+# Third-Party Imports
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+import jwt
+
+# Local Imports
+from backend.app.database import UserData
+from backend.app.schemas import User
+from backend.app.models import Token
+from backend.app.utils import hash_password
+from config_file import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+
 
 router = APIRouter()
 

@@ -5,7 +5,7 @@ from datetime import datetime
 # Local Imports
 from config_file import DB_CONFIG
 from backend.app.utils import SessionManager, hash_password
-from backend.app.schemas import User, Tag, Task, TaskStatus, TaskPriority
+from backend.app.schemas import User, Tag, Task
 
 
 class UserData:
