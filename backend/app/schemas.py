@@ -26,7 +26,7 @@ class User(Base):
     __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String(255), unique=True, nullable=False)
+    username = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
@@ -35,7 +35,7 @@ class User(Base):
     tasks = relationship('Task', back_populates='user')
 
     def __repr__(self):
-        return f"<User(user_id={self.user_id}, email={self.email})>"
+        return f"<User(user_id={self.user_id}, username={self.username})>"
 
 
 class Tag(Base):

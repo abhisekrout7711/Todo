@@ -12,28 +12,28 @@ class UserData:
     def __init__(self):
         self.session = SessionManager(**DB_CONFIG).get_session()
 
-    def get_user(self, user_id: int=None, email: str=None) -> Union[User, dict]:
-        """Read and return data from the db filter by user_id or email"""
+    def get_user(self, user_id: int=None, username: str=None) -> Union[User, dict]:
+        """Read and return data from the db filter by user_id or username"""
         if user_id:
             data = self.session.query(User).filter_by(user_id=user_id).first()
 
-        if email:
-            data = self.session.query(User).filter_by(email=email).first()
+        if username:
+            data = self.session.query(User).filter_by(username=username).first()
 
         if not data:
             return {"error":"User doesn't exist", "status_code": 404}
         
         return data
 
-    def add_user(self, email: str, password: str) -> dict:
+    def add_user(self, username: str, password: str) -> dict:
         """Adds new user to the db if the user doesn't already exist"""
-        data = self.get_user(email=email)
+        data = self.get_user(username=username)
         if isinstance(data, User):
             return {"error": "User already exists", "status_code": 409}
 
         password_hash = hash_password(password)
         try:
-            new_user = User(email=email, password_hash=password_hash)
+            new_user = User(username=username, password_hash=password_hash)
             self.session.add(new_user)
             self.session.commit()
             return {"message": "User added successfully", "status_code": 201}
@@ -41,15 +41,15 @@ class UserData:
         except Exception as e:
             return {"error": f"Error adding new user - {e}", "status_code": 400}
 
-    def update_user(self, user_id: int, new_email: str=None, new_password: str=None) -> dict:
-        """Updates the user with the new email or/and new password if the user exists"""
+    def update_user(self, user_id: int, new_username: str=None, new_password: str=None) -> dict:
+        """Updates the user with the new username or/and new password if the user exists"""
         data = self.get_user(user_id=user_id)
         if isinstance(data, dict):
             return data
         
         try:
-            if new_email:
-                data.email = new_email
+            if new_username:
+                data.username = new_username
             
             if new_password:
                 new_password_hash = hash_password(new_password)

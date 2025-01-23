@@ -14,9 +14,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 router = APIRouter()
 
 @router.post("/register")
-async def register_user(email: str, password: str):
+async def register_user(username: str, password: str):
     user_data_obj = UserData()
-    response = user_data_obj.add_user(email=email, password=password) # Password hasing is taken care of
+    response = user_data_obj.add_user(username=username, password=password) # Password hasing is taken care of
     if "error" in response:
         raise HTTPException(status_code=response["status_code"], detail=response["error"])
     
@@ -26,10 +26,10 @@ async def register_user(email: str, password: str):
 @router.post("/login", response_model=Token, status_code=200)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):  
     """Returns a JWT token if the user is authenticated"""
-    email = form_data.username
+    username = form_data.username
     password = form_data.password
     user_data_obj = UserData()
-    data: User = user_data_obj.get_user(email=email)
+    data: User = user_data_obj.get_user(username=username)
     
     if isinstance(data, User):
         hashed_password = hash_password(password)
@@ -38,7 +38,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             assert hashed_password == data.password_hash
             
             token_data = {
-                "sub": email,
+                "sub": username,
                 "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
             }
             token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
@@ -58,9 +58,9 @@ async def logout():
 
 
 @router.patch("/update/{user_id}")
-def update_user(user_id: int, new_email: str=None, new_password: str=None):
+def update_user(user_id: int, new_username: str=None, new_password: str=None):
     user_data_obj = UserData()
-    response = user_data_obj.update_user(user_id=user_id, new_email=new_email, new_password=new_password)
+    response = user_data_obj.update_user(user_id=user_id, new_username=new_username, new_password=new_password)
     if "error" in response:
         raise HTTPException(status_code=response["status_code"], detail=response["error"])
     
