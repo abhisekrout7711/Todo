@@ -1,6 +1,6 @@
 
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from backend.app.database import UserData
 from backend.app.schemas import User
 from backend.app.utils import hash_password
@@ -8,6 +8,8 @@ import jwt
 from config_file import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from backend.app.models import Token
 from datetime import datetime, timedelta, timezone
+
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
 
@@ -22,11 +24,12 @@ async def register_user(email: str, password: str):
 
 
 @router.post("/login", response_model=Token, status_code=200)
-async def login(username: str, password: str):
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):  
     """Returns a JWT token if the user is authenticated"""
-    breakpoint()
+    email = form_data.username
+    password = form_data.password
     user_data_obj = UserData()
-    data: User = user_data_obj.get_user(email=username)
+    data: User = user_data_obj.get_user(email=email)
     
     if isinstance(data, User):
         hashed_password = hash_password(password)
@@ -35,7 +38,7 @@ async def login(username: str, password: str):
             assert hashed_password == data.password_hash
             
             token_data = {
-                "sub": username,
+                "sub": email,
                 "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
             }
             token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)

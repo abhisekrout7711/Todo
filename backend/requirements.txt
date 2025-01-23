@@ -5,3 +5,4 @@ passlib
 uvicorn
 bcrypt
 pyjwt
+python-multipart
