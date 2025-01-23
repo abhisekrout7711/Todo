@@ -16,7 +16,7 @@ from config_file import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter()
 
-@router.post("/register")
+@router.post("/register", status_code=201)
 async def register_user(username: str, password: str):
     user_data_obj = UserData()
     response = user_data_obj.add_user(username=username, password=password) # Password hasing is taken care of
@@ -55,12 +55,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=404, detail="User not found")
 
 
-@router.post("/logout")
+@router.post("/logout", status_code=200)
 async def logout():
     return {"message": "Logout successful", "status_code": 200}
 
 
-@router.patch("/update/{user_id}")
+@router.patch("/update/{user_id}", status_code=200)
 def update_user(user_id: int, new_username: str=None, new_password: str=None):
     user_data_obj = UserData()
     response = user_data_obj.update_user(user_id=user_id, new_username=new_username, new_password=new_password)
@@ -70,7 +70,7 @@ def update_user(user_id: int, new_username: str=None, new_password: str=None):
     return response
 
 
-@router.delete("/delete/{user_id}")
+@router.delete("/delete/{user_id}", status_code=200)
 def delete_user(user_id: int):
     user_data_obj = UserData()
     response = user_data_obj.delete_user(user_id=user_id)

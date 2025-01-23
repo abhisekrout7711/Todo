@@ -1,5 +1,5 @@
 # Standard Imports
-from typing import Union
+from typing import Union, List
 from datetime import datetime
 
 # Local Imports
@@ -138,7 +138,7 @@ class TaskData:
     def __init__(self):
         self.session = SessionManager(**DB_CONFIG).get_session()
 
-    def create_task(self, user_id: int, title: str, description: str=None, tag: str=None, due_date: str=None, priority: str=None) -> dict:
+    def create_task(self, user_id: int, title: str, description: str=None, tag: str=None, due_date: datetime=None, priority: str=None) -> dict:
         """Creates a new task for a user"""
         
         user_data = UserData().get_user(user_id=user_id)
@@ -175,13 +175,13 @@ class TaskData:
     
     def update_task(
             self, user_id: int, task_id: int, title: str=None, description: str=None,
-            tag: str=None, due_date: str=None, priority: str=None, status: str=None
+            tag: str=None, due_date: datetime=None, priority: str=None, status: str=None
         ) -> dict:
         """Updates the task with the new title, description, status and tag if the task exists"""
         
         data = self.get_task(user_id=user_id, task_id=task_id)
-        if isinstance(data, dict):
-            return data
+        if not data:
+            return {"error": f"Task:{task_id} doesn't exist for User:{user_id}", "status_code": 404}
         
         try:
             if title:
@@ -225,43 +225,41 @@ class TaskData:
             except Exception as e:
                 return {"error": f"Error deleting task - {e}", "status_code": 400}
         
-        return {"error": "Task doesn't exist", "status_code": 404}
+        return {"error": f"Task:{task_id} doesn't exist for User:{user_id}", "status_code": 404}
     
-    def get_task(self, user_id: int, task_id: int) -> Union[Task, dict]:
+    def get_task(self, user_id: int, task_id: int) -> Task:
         """Read and return data from the db filter by user_id and task_id"""
         data = self.session.query(Task).filter_by(user_id=user_id, task_id=task_id).first()
-        if not data:
-            return {"error":"Task doesn't exist", "status_code": 404}
         return data
     
-    def get_all_tasks(self, user_id: int) -> list:
+    def get_all_tasks(self, user_id: int) -> List[Task]:
         """Returns all tasks for a user"""
         data = self.session.query(Task).filter_by(user_id=user_id).all()
         return data
     
-    def get_tasks_by_tag(self, user_id: int, tag: str) -> list:
+    def get_tasks_by_tag(self, user_id: int, tag: str) -> List[Task]:
         """Returns all tasks for a user for a specific tag"""
         data = self.session.query(Task).filter_by(user_id=user_id, tag=tag).all()
         return data
     
-    def get_tasks_by_status(self, user_id: int, status: str) -> list:
+    def get_tasks_by_status(self, user_id: int, status: str) -> List[Task]:
         """Returns all tasks for a user for a specific status"""
         data = self.session.query(Task).filter_by(user_id=user_id, status=status).all()
         return data
     
-    def get_tasks_by_priority(self, user_id: int, priority: str) -> list:
+    def get_tasks_by_priority(self, user_id: int, priority: str) -> List[Task]:
         """Returns all tasks for a user for a specific priority"""
         data = self.session.query(Task).filter_by(user_id=user_id, priority=priority).all()
         return data
     
-    def search_tasks_by_text(self, user_id: int, text: str) -> list:
+    def search_tasks_by_text(self, user_id: int, text: str) -> List[Task]:
         """Returns all tasks for a user by searching for a sub sting in the title or description"""
         data1 = self.session.query(Task).filter(Task.user_id == user_id, Task.title.ilike(f"%{text}%")).all()
         data2 = self.session.query(Task).filter(Task.user_id == user_id, Task.description.ilike(f"%{text}%")).all()
         data = list(set(data1 + data2)) # Remove duplicates from data1 + data2
         return data
     
-    def auto_update_task_status_to_overdue(self):
+    def auto_update_task_status_to_overdue(self) -> dict:
         """
         Auto updates task status to 'Overdue' if the current date (login date) is greater than 
         the due date and the task status is not 'Completed'
@@ -279,15 +277,3 @@ class TaskData:
                     self.session.commit()
         
         return {"message": "Tasks' status refreshed!", "status_code": 200}
-
-
-if __name__=="__main__":
-    
-
-    # Example usage
-    hashed_password1 = hash_password("example_password")
-    hashed_password2 = hash_password("example_password")
-
-    print(hashed_password1)  # Same hash every time
-    print(hashed_password2)  # Same hash every time
-    
