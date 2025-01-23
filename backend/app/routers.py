@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from backend.app.auth import router as auth_router
-from backend.app.tasks import router as task_router
+from backend.app.task import router as task_router
 
 
 router = APIRouter(prefix="/api")
