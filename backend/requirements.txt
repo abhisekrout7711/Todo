@@ -3,3 +3,5 @@ sqlalchemy
 alembic
 passlib
 uvicorn
+bcrypt
+pyjwt

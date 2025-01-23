@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from passlib.context import CryptContext
+import hashlib
 
 
 class SessionManager:
@@ -39,7 +39,6 @@ class SessionManager:
             self.engine = None
     
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str):
-    """Hashes and returns the user's password"""
-    return pwd_context.hash(password)
+        """Hashes and returns the user's password deterministically"""
+        return hashlib.sha256(password.encode('utf-8')).hexdigest()

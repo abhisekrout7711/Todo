@@ -60,7 +60,7 @@ class UserData:
         except Exception as e:
             return {"error": f"Error updating user details - {e}", "status_code": 400}
         
-        return {"message": "Password updated successfully", "status_code": 200}
+        return {"message": "User details updated successfully", "status_code": 200}
     
     def delete_user(self, user_id: int) -> dict:
         """Delete user from the database by user_id"""
@@ -282,42 +282,12 @@ class TaskData:
 
 
 if __name__=="__main__":
-    obj = UserData()
     
-    obj.add_user("user1@gmail.com", "password")
-    obj.add_user("user2@gmail.com", "password")
+
+    # Example usage
+    hashed_password1 = hash_password("example_password")
+    hashed_password2 = hash_password("example_password")
+
+    print(hashed_password1)  # Same hash every time
+    print(hashed_password2)  # Same hash every time
     
-    data = obj.get_user(email="user1@gmail.com")
-    data = obj.get_user(email="user2@gmail.com")
-
-    
-    obj.update_user(user_id=1, new_email="user1_new@gmail.com", new_password="new_password")
-    obj.update_user(user_id=2, new_password="new_password")    
-
-    data= obj.delete_user(user_id=2)
-
-    obj = TagData()
-    obj.add_tag("Work")
-    obj.add_tag("Personal")
-    obj.add_tag("Home")
-
-    data = obj.get_tag(tag="Work")
-    data = obj.delete_tag(tag="Personal")
-
-    obj = TagData()
-    data = obj.update_tag(tag="Home", new_tag="Family")
-
-    print(data)
-
-    obj = TaskData()
-    data = obj.get_task(user_id=1, task_id=1)
-    print(data)
-    
-    data = obj.create_task(user_id=1, title="Task 1", description="Description 1", due_date="2023-01-01", tag="Work")
-    data = obj.update_task(user_id=1, task_id=1, title="Random", description="Description Random", tag="Work", priority=TaskPriority.High.value, status=TaskStatus.Completed.value)
-    
-    data = obj.get_tasks_by_status(user_id=1, status=TaskStatus.Completed.value)
-    print(data)
-    
-    data = obj.get_tasks_by_priority(user_id=1, priority=TaskPriority.High.value)
-    print(data)
