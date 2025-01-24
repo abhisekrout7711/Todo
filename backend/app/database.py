@@ -157,12 +157,13 @@ class TaskData:
                 new_task.description = description
 
             if tag:
-                tag_ = TagData().get_tag(id=user_id, tag=tag).tag
-                new_task.tag = tag_
+                try:
+                    tag_ = TagData().get_tag(id=user_id, tag=tag).tag
+                    new_task.tag = tag_
             
-            else:
-                return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
-
+                except AttributeError as e:
+                    return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
+            
             if due_date:
                 new_task.due_date = due_date
 
