@@ -8,6 +8,7 @@ from fastapi import Depends, HTTPException, APIRouter, Header
 from backend.auth_utils import get_current_user
 from backend.app.database import TaskData
 from backend.app.schemas import User, TaskStatus, TaskPriority
+from backend.app.models import TaskResponse, TasksResponse
 
 router = APIRouter()
 
@@ -61,67 +62,78 @@ async def delete_task(task_id: int, current_user: User = Depends(get_current_use
     return response
 
 
-@router.get("/id/{task_id}", status_code=200)
+@router.get("/id/{task_id}", response_model=TaskResponse, status_code=200)
 async def get_task(task_id: int, current_user: User = Depends(get_current_user)):
     """Returns a task for a given task_id if the task exists"""
     task_data_obj = TaskData()
-    data = task_data_obj.get_task(user_id=current_user.user_id, task_id=task_id)
-    if not data:
+    task = task_data_obj.get_task(user_id=current_user.user_id, task_id=task_id)
+    if not task:
         raise HTTPException(status_code=404, detail=f"Task:{task_id} not found for User:{current_user.user_id}")
     
-    return {"message": "success", "status_code": 200}
+    return task
 
 
-@router.get("/all", status_code=200)
+@router.get("/all", response_model=TasksResponse, status_code=200)
 async def get_tasks(current_user: User = Depends(get_current_user)):
     """Returns all tasks for a given user"""
     task_data_obj = TaskData()
-    data = task_data_obj.get_all_tasks(user_id=current_user.user_id)
-    if not data:
-        raise HTTPException(status_code=404, detail=f"No task found for User:{current_user.user_id}")
+    tasks = task_data_obj.get_all_tasks(user_id=current_user.user_id)
+    if not tasks:
+        return TasksResponse(task_count=0,tasks=[])
     
-    return {"message": "success", "status_code": 200}
+    tasks = [TaskResponse(**task.__dict__) for task in tasks]
+
+    return TasksResponse(task_count=len(tasks), tasks=tasks)
 
 
-@router.get("/tag", status_code=200)
+@router.get("/tag", response_model=TasksResponse, status_code=200)
 async def get_tasks_by_tag(tag: str, current_user: User = Depends(get_current_user)):
     """Retrieves all tasks for a given user filtered by a specific tag"""
     task_data_obj = TaskData()
-    data = task_data_obj.get_tasks_by_tag(user_id=current_user.user_id, tag=tag)
-    if not data:
-        raise HTTPException(status_code=404, detail=f"No task with Tag:{tag} found for User:{current_user.user_id}")
+    tasks = task_data_obj.get_tasks_by_tag(user_id=current_user.user_id, tag=tag)
+    if not tasks:
+        return TasksResponse(task_count=0,tasks=[])
     
-    return {"message": "success", "status_code": 200}
+    tasks = [TaskResponse(**task.__dict__) for task in tasks]
+
+    return TasksResponse(task_count=len(tasks), tasks=tasks)
 
 
-@router.get("/status", status_code=200)
+@router.get("/status", response_model=TasksResponse, status_code=200)
 async def get_tasks_by_status(status: TaskStatus, current_user: User = Depends(get_current_user)):
     """Retrieves all tasks for a given user filtered by a specific status"""
     task_data_obj = TaskData()
-    data = task_data_obj.get_tasks_by_status(user_id=current_user.user_id, status=status.value)
-    if not data:
-        raise HTTPException(status_code=404, detail=f"No task with Status:{status.value} found for User:{current_user.user_id}")
+    tasks = task_data_obj.get_tasks_by_status(user_id=current_user.user_id, status=status.value)
+    if not tasks:
+        return TasksResponse(task_count=0,tasks=[])
     
-    return {"message": "success", "status_code": 200}
+    tasks = [TaskResponse(**task.__dict__) for task in tasks]
+
+    return TasksResponse(task_count=len(tasks), tasks=tasks)
 
 
-@router.get("/priority", status_code=200)
+
+@router.get("/priority", response_model=TasksResponse, status_code=200)
 async def get_tasks_by_priority(priority: TaskPriority, current_user: User = Depends(get_current_user)):
     """Retrieves all tasks for a given user filtered by a specific priority"""
     task_data_obj = TaskData()
-    data = task_data_obj.get_tasks_by_priority(user_id=current_user.user_id, priority=priority.value)
-    if not data:
-        raise HTTPException(status_code=404, detail=f"No task with Priority:{priority.value} found for User:{current_user.user_id}")
+    tasks = task_data_obj.get_tasks_by_priority(user_id=current_user.user_id, priority=priority.value)
+    if not tasks:
+        return TasksResponse(task_count=0,tasks=[])
     
-    return {"message": "success", "status_code": 200}
+    tasks = [TaskResponse(**task.__dict__) for task in tasks]
+
+    return TasksResponse(task_count=len(tasks), tasks=tasks)
 
 
-@router.get("/text", status_code=200)
+@router.get("/text", response_model=TasksResponse, status_code=200)
 async def search_tasks_by_text(text: str, current_user: User = Depends(get_current_user)):
     """Returns all tasks for a user by searching for a sub sting in the title or description"""
     task_data_obj = TaskData()
-    data = task_data_obj.search_tasks_by_text(user_id=current_user.user_id, text=text)
-    if not data:
-        raise HTTPException(status_code=404, detail=f"No task with Text:{text} found for User:{current_user.user_id}")
+    tasks = task_data_obj.search_tasks_by_text(user_id=current_user.user_id, text=text)
+    if not tasks:
+        return TasksResponse(task_count=0,tasks=[])
     
-    return {"message": "success", "status_code": 200}
+    tasks = [TaskResponse(**task.__dict__) for task in tasks]
+
+    return TasksResponse(task_count=len(tasks), tasks=tasks)

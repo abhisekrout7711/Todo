@@ -8,17 +8,20 @@ from fastapi import Depends, HTTPException, APIRouter, Header
 from backend.auth_utils import get_current_user
 from backend.app.database import TagData
 from backend.app.schemas import User
+from backend.app.models import TagResponse, TagsResponse
 
 router = APIRouter()
 
-@router.get("/all", status_code=200)
+@router.get("/all", response_model=TagsResponse, status_code=200)
 async def get_all_tags(current_user: User = Depends(get_current_user)):
     """Returns all tags for the current user"""
-    data = TagData().get_all_tags(id=current_user.user_id)
-    if not data:
-        raise HTTPException(status_code=404, detail=f"No tags found for User:{current_user.user_id}")
+    tags = TagData().get_all_tags(id=current_user.user_id)
+    if not tags:
+       return TagsResponse(tag_count=0, tags=[])
     
-    return {"message": "success", "status_code": 200}
+    tags = [TagResponse(**tag.__dict__) for tag in tags]
+
+    return TagsResponse(tag_count=len(tags), tags=tags)
 
 
 @router.post("/create", status_code=201)
