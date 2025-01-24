@@ -84,6 +84,7 @@ class TagData:
     def get_tag(self, id: int, tag: str) -> Tag:
         """Return tag for a user filter by tag if tag exists"""
         data = self.session.query(Tag).filter_by(id=id, tag=tag).first()
+        breakpoint()
         return data
     
     def get_all_tags(self, id: int) -> List[Tag]:
@@ -155,6 +156,7 @@ class TaskData:
             # Optional Parameters
             if description:
                 new_task.description = description
+                
             if tag:
                 tag_ = TagData().get_tag(id=user_id, tag=tag).tag
                 new_task.tag = tag_
@@ -194,11 +196,11 @@ class TaskData:
                 data.description = description
             
             if tag:
-                tag_data = TagData().get_tag(id=user_id, tag=tag)
-                if isinstance(tag_data, dict):
-                    return tag_data
-                
-                data.tag = tag
+                tag_ = TagData().get_tag(id=user_id, tag=tag).tag
+                data.tag = tag_
+            
+            else:
+                return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
             
             if due_date:
                 data.due_date = due_date
