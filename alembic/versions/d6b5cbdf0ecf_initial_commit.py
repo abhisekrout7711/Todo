@@ -1,8 +1,8 @@
-"""Initial  migration
+"""Initial Commit
 
-Revision ID: 4540fd2487f2
+Revision ID: d6b5cbdf0ecf
 Revises: 
-Create Date: 2025-01-23 02:43:16.135823
+Create Date: 2025-01-24 02:24:34.495666
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4540fd2487f2'
+revision: str = 'd6b5cbdf0ecf'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,12 +26,12 @@ def upgrade() -> None:
     )
     op.create_table('users',
     sa.Column('user_id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('username', sa.String(length=255), nullable=False),
     sa.Column('password_hash', sa.String(length=255), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('user_id'),
-    sa.UniqueConstraint('email')
+    sa.UniqueConstraint('username')
     )
     op.create_table('tasks',
     sa.Column('task_id', sa.Integer(), autoincrement=True, nullable=False),
