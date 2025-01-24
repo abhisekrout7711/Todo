@@ -81,26 +81,24 @@ class TagData:
     def __init__(self):
         self.session = SessionManager(**DB_CONFIG).get_session()
         
-    def get_tag(self, tag: str) -> Union[Tag, dict]:
-        """Read and return data from the db filter by name"""
-        data = self.session.query(Tag).filter_by(tag=tag).first()
-        if not data:
-            return {"error":"Tag doesn't exist", "status_code": 404}
+    def get_tag(self, id: int, tag: str) -> Tag:
+        """Return tag for a user filter by tag if tag exists"""
+        data = self.session.query(Tag).filter_by(id=id, tag=tag).first()
         return data
     
-    def get_all_tags(self, user_id: int) -> List[Tag]:
+    def get_all_tags(self, id: int) -> List[Tag]:
         """Returns all tags for a user"""
-        data = self.session.query(Tag).filter_by(user_id=user_id).all()
+        data = self.session.query(Tag).filter_by(id=id).all()
         return data
     
-    def add_tag(self, tag: str) -> dict:
-        """Adds new tag to the db if the tag doesn't already exist"""
-        data = self.get_tag(tag=tag)
-        if isinstance(data, Tag):
-            return {"error": "Tag already exists", "status_code": 409}
+    def add_tag(self, id: int, tag: str) -> dict:
+        """Adds new tag to the db for a user if the tag doesn't already exist"""
+        data = self.get_tag(id=id, tag=tag)
+        if data:
+            return {"error": f"Tag:{tag} already exists for User:{id}", "status_code": 409}
 
         try:
-            new_tag = Tag(tag=tag)
+            new_tag = Tag(id=id, tag=tag)
             self.session.add(new_tag)
             self.session.commit()
             return {"message": "Tag added successfully", "status_code": 201}
@@ -108,11 +106,12 @@ class TagData:
         except Exception as e:
             return {"error": f"Error adding new tag - {e}", "status_code": 400}
 
-    def update_tag(self, tag: str, new_tag: str=None) -> dict:
+    def update_tag(self, id: int, tag: str, new_tag: str=None) -> dict:
         """Updates the tag with the new name if the tag exists"""
-        data = self.get_tag(tag=tag)
-        if isinstance(data, dict):
-            return data
+        data = self.get_tag(id=id, tag=tag)
+        if not data:
+            return {"error": f"Tag:{tag} doesn't exist for User:{id}", "status_code": 404}
+        
         try:
             if new_tag:
                 data.tag = new_tag
@@ -124,19 +123,19 @@ class TagData:
 
         return {"message": "Tag updated successfully", "status_code": 200}
     
-    def delete_tag(self, tag: str) -> dict:
+    def delete_tag(self, id: int, tag: str) -> dict:
         """Delete tag from the database by tag_id"""
-        data = self.get_tag(tag=tag)
-        if isinstance(data, Tag):
-            try:
-                self.session.delete(data)
-                self.session.commit()
-                return {"message": "Tag deleted successfully", "status_code": 200}
-            
-            except Exception as e:
-                return {"error": f"Error deleting tag - {e}", "status_code": 400}
+        data = self.get_tag(id=id, tag=tag)
+        if not data:
+            return {"error": f"Tag:{tag} doesn't exist for User:{id}", "status_code": 404}
+    
+        try:
+            self.session.delete(data)
+            self.session.commit()
+            return {"message": "Tag deleted successfully", "status_code": 200}
         
-        return {"error": "Tag doesn't exist", "status_code": 404}
+        except Exception as e:
+            return {"error": f"Error deleting tag - {e}", "status_code": 400}
 
 
 class TaskData:
@@ -156,13 +155,12 @@ class TaskData:
             # Optional Parameters
             if description:
                 new_task.description = description
-
             if tag:
-                tag_data = TagData().get_tag(tag=tag)
-                if isinstance(tag_data, dict):
-                    return tag_data
-                
-                new_task.tag = tag
+                tag_ = TagData().get_tag(id=user_id, tag=tag).tag
+                new_task.tag = tag_
+            
+            else:
+                return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
 
             if due_date:
                 new_task.due_date = due_date
@@ -196,7 +194,7 @@ class TaskData:
                 data.description = description
             
             if tag:
-                tag_data = TagData().get_tag(tag=tag)
+                tag_data = TagData().get_tag(id=user_id, tag=tag)
                 if isinstance(tag_data, dict):
                     return tag_data
                 

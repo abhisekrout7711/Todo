@@ -13,7 +13,6 @@ from backend.app.models import Token
 from backend.app.utils import hash_password
 from config_file import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-
 router = APIRouter()
 
 @router.post("/register", status_code=201)

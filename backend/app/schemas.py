@@ -32,6 +32,7 @@ class User(Base):
         return f"<User(user_id={self.user_id}, username={self.username})>"
 
 
+# Tag Model
 class Tag(Base):
     __tablename__ = 'tags'
 
@@ -43,10 +44,11 @@ class Tag(Base):
     )
 
     # Relationship to access tasks of the tag
-    tasks = relationship('Task', back_populates='tag_relation', cascade='all, delete-orphan')
+    tasks = relationship('Task', back_populates='tag_relation')
 
     def __repr__(self):
         return f"<Tag(id={self.id}, tag={self.tag})>"
+
 
 # Task Model
 class Task(Base):
@@ -67,7 +69,7 @@ class Task(Base):
     user = relationship('User', back_populates='tasks')
 
     # Relationship to the Tag model
-    tag_relation = relationship('Tag', back_populates='tasks', passive_deletes=True)
+    tag_relation = relationship('Tag', back_populates='tasks')
 
     def __repr__(self):
         return f"<Task(task_id={self.task_id}, title={self.title}, status={self.status}, tag={self.tag})>"
