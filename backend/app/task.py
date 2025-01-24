@@ -34,7 +34,7 @@ async def create_task(
 async def update_task(
         task_id: int, # required query parameter
         title: str=None, description: str=None, tag: str=None, 
-        due_date: str=None, priority:TaskPriority=TaskPriority.Medium, status: TaskStatus=None,
+        due_date: str=None, priority:TaskPriority=TaskPriority.Medium, status: TaskStatus=TaskStatus.Pending,
         current_user: User = Depends(get_current_user)
     ):
     """Updates the task with the new title, description, status and tag if the task exists"""
