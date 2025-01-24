@@ -156,7 +156,7 @@ class TaskData:
             # Optional Parameters
             if description:
                 new_task.description = description
-                
+
             if tag:
                 tag_ = TagData().get_tag(id=user_id, tag=tag).tag
                 new_task.tag = tag_
@@ -196,11 +196,12 @@ class TaskData:
                 data.description = description
             
             if tag:
-                tag_ = TagData().get_tag(id=user_id, tag=tag).tag
-                data.tag = tag_
-            
-            else:
-                return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
+                try:
+                    tag_ = TagData().get_tag(id=user_id, tag=tag).tag
+                    data.tag = tag_
+                
+                except AttributeError as e:
+                    return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
             
             if due_date:
                 data.due_date = due_date
