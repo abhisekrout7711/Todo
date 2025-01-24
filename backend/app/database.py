@@ -84,7 +84,6 @@ class TagData:
     def get_tag(self, id: int, tag: str) -> Tag:
         """Return tag for a user filter by tag if tag exists"""
         data = self.session.query(Tag).filter_by(id=id, tag=tag).first()
-        breakpoint()
         return data
     
     def get_all_tags(self, id: int) -> List[Tag]:
