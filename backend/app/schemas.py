@@ -84,3 +84,10 @@ class Task(Base):
 
     def __repr__(self):
         return f"<Task(task_id={self.task_id}, title={self.title}, status={self.status}, tag={self.tag_id})>"
+
+
+class RevokedToken(Base):
+    __tablename__ = 'revoked_tokens'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    jti = Column(String(255), nullable=False)

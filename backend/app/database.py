@@ -5,7 +5,7 @@ from datetime import datetime
 # Local Imports
 from config_file import DB_CONFIG
 from backend.app.utils import SessionManager, hash_password
-from backend.app.schemas import Admin, User, Tag, Task
+from backend.app.schemas import Admin, User, Tag, Task, RevokedToken
 
 
 class AdminData:
@@ -332,3 +332,26 @@ class TaskData:
                     self.session.commit()
         
         return {"message": "Tasks' status refreshed!", "status_code": 200}
+
+
+class TokenData:
+    def __init__(self):
+        self.session = SessionManager(**DB_CONFIG).get_session()
+    
+    def revoke_token(self, token: str):
+        """Revoke a JWT token"""
+        try:
+            new_revoked_token = RevokedToken(jti=token)
+            self.session.add(new_revoked_token)
+            self.session.commit()
+        except Exception as e:
+            return {"error": f"Error revoking token - {e}", "status_code": 400}
+        
+        return {"message": "Token revoked successfully", "status_code": 200}
+    
+    def check_if_token_revoked(self, token: str) -> bool:
+        """Check if a token is revoked"""
+        data = self.session.query(RevokedToken).filter_by(jti=token).first()
+        if data:
+            return True
+        return False

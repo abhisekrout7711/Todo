@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 # Local Imports
-from backend.app.database import AdminData, UserData
+from backend.app.database import AdminData, UserData, TokenData
 from backend.auth_utils import get_current_user, generate_token, raise_exception
 
 router = APIRouter()
@@ -43,14 +43,15 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @router.post("/logout", status_code=200)
 @raise_exception
-async def logout(current_user=Depends(get_current_user)):
+async def logout(current_user: dict=Depends(get_current_user)):
+    TokenData().revoke_token(current_user["token"])
     return {"message": "Logout successful", "status_code": 200}
 
 
 @router.post("/delete", status_code=200)
 @raise_exception
-async def delete_user(current_user=Depends(get_current_user)):
-    response = UserData().delete_user(user_id=current_user.user_id)
+async def delete_user(current_user: dict=Depends(get_current_user)):
+    response = UserData().delete_user(user_id=current_user["user"].user_id)
     if "error" in response:
         raise HTTPException(status_code=response["status_code"], detail=response["error"])
     

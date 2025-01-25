@@ -1,6 +1,7 @@
 # Standard Imports
 from functools import wraps
 from datetime import datetime, timedelta, timezone
+from typing import Tuple
 
 # Third-Party Imports
 import jwt
@@ -9,12 +10,13 @@ from fastapi.security import OAuth2PasswordBearer
 
 # Local Imports
 from config_file import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from backend.app.database import AdminData, UserData
+from backend.app.database import AdminData, UserData, TokenData
+from backend.app.schemas import Admin, User
 
 OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 
 
-def get_current_user(access_token: str = Depends(OAUTH2_SCHEME)):
+def get_current_user(access_token: str = Depends(OAUTH2_SCHEME)) -> dict:
     """Decode the JWT token and retrieve the current user."""
     try:
         payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -29,10 +31,11 @@ def get_current_user(access_token: str = Depends(OAUTH2_SCHEME)):
         raise HTTPException(status_code=401, detail="Invalid token")
 
     user = UserData().get_user(username=username)
-    return user
+
+    return {"user": user, "token": access_token}
 
 
-def get_current_admin(access_token: str = Depends(OAUTH2_SCHEME)):
+def get_current_admin(access_token: str = Depends(OAUTH2_SCHEME)) -> Admin:
     """Decode the JWT token and retrieve the current admin."""
     try:
         payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -68,8 +71,25 @@ def generate_token(username: str) -> str:
 def raise_exception(func):
     """Raises an exception if the current user is not authorised"""
     @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not kwargs.get("current_user"):
+    async def wrapper(*args, **kwargs):
+        user = kwargs.get("current_user").get("user")
+        token = kwargs.get("current_user").get("token")
+
+        if not user:
             raise HTTPException(status_code=403, detail="Unauthorized User")
-        return func(*args, **kwargs)
+        
+        if TokenData().check_if_token_revoked(token):
+            raise HTTPException(status_code=401, detail="Token expired - Please login again")
+        
+        return await func(*args, **kwargs)
+    return wrapper
+
+
+def only_admin(func):
+    """Raises an exception if the current admin is not authorised"""
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        if not kwargs.get("current_admin"):
+            raise HTTPException(status_code=403, detail="Unauthorized User")
+        return await func(*args, **kwargs)
     return wrapper
