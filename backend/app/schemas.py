@@ -21,12 +21,12 @@ class TaskPriority(enum.Enum):
 class Admin(Base):
     __tablename__ = 'admins'
 
-    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    admin_id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
 
     def __repr__(self):
-        return f"<Admin(user_id={self.user_id}, username={self.username})>"
+        return f"<Admin(user_id={self.admin_id}, username={self.username})>"
     
 
 # User Model
@@ -50,7 +50,7 @@ class User(Base):
 class Tag(Base):
     __tablename__ = 'tags'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    tag_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
     tag = Column(String(255), nullable=False)
 
@@ -58,7 +58,7 @@ class Tag(Base):
     tasks = relationship('Task', back_populates='tag_relation')
 
     def __repr__(self):
-        return f"<Tag(id={self.id}, tag={self.tag})>"
+        return f"<Tag(id={self.tag_id}, tag={self.tag})>"
 
 
 # Task Model
@@ -67,7 +67,7 @@ class Task(Base):
 
     task_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
-    tag_id = Column(Integer, ForeignKey('tags.id', ondelete='SET NULL'), nullable=True)
+    tag_id = Column(Integer, ForeignKey('tags.tag_id', ondelete='SET NULL'), nullable=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(Enum(TaskStatus), default=TaskStatus.Pending.value, nullable=False)
@@ -83,4 +83,4 @@ class Task(Base):
     tag_relation = relationship('Tag', back_populates='tasks')
 
     def __repr__(self):
-        return f"<Task(task_id={self.task_id}, title={self.title}, status={self.status}, tag={self.tag})>"
+        return f"<Task(task_id={self.task_id}, title={self.title}, status={self.status}, tag={self.tag_id})>"

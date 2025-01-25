@@ -1,6 +1,9 @@
+# Standard Imports
+import hashlib
+
+# Third-Party Imports
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-import hashlib
 
 
 class SessionManager:
@@ -11,12 +14,7 @@ class SessionManager:
         self.__db_url = f"postgresql://{username}:{password}@{host}:{port}/{database}"
 
     def get_session(self) -> Session:
-        """
-        A property that returns the session object if it exists, otherwise creates a new session and returns it
-
-        Raises:
-            RuntimeError: If session creation fails
-        """
+        """Returns the session object if it exists, otherwise creates a new session and returns it"""
         if not self.session:
             # Create a new session if there is no existing session
             try:

@@ -12,6 +12,19 @@ application.add_middleware(
     allow_headers = ["*"]
 )
 
+# application.openapi = lambda: {
+#     **application.openapi(),
+#     "components": {
+#         "securitySchemes": {
+#             "bearerAuth": {
+#                 "type": "http",
+#                 "scheme": "bearer",
+#                 "bearerFormat": "JWT",
+#             }
+#         }
+#     },
+# }
+
 @application.get('/', include_in_schema=True)
 async def app_start():
     return {"message": "application running!"}
