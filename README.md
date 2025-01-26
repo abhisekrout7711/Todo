@@ -42,11 +42,12 @@ alembic upgrade head
 export PYTHONPATH=$PYTHONPATH:/Users/abhisekrout/Desktop/Todo
 ```
 
-### Run the application (Using Uvicorn)
+## Run the application 
+### Using Uvicorn
 ```bash
 uvicorn backend.main:application --reload
 ```
-### Run the application (Simply run main.py)
+### Or Directly run main.py
 ```bash
 python backend/main.py
 ```
