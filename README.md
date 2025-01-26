@@ -99,13 +99,13 @@ python backend/main.py
 
 ### Task
 - **POST** `/api/task/create`: Create a new task
-- **GET** `/api/task/all`: Get all tasks for the current user
+- **GET** `/api/task/all/`: Get all tasks for the current user
 - **GET** `/api/task/{task_id}`: Get a specific task for the current user
 - **PATCH** `/api/task/{task_id}`: Update a specific task for the current user
 - **DELETE** `/api/task/{task_id}`: Delete a specific task for the current user
-- **GET** `/api/task/status`: Get all tasks for the current user filtered by a specific status
-- **GET** `/api/task/priority`: Get all tasks for the current user filtered by a specific priority
-- **GET** `/api/task/text`: Search for tasks by text
+- **GET** `/api/task/status/`: Get all tasks for the current user filtered by a specific status
+- **GET** `/api/task/priority/`: Get all tasks for the current user filtered by a specific priority
+- **GET** `/api/task/text/`: Search for tasks by text
 
 ### Tag
 - **GET** `/api/tag/all`: Get all tags for the current user
@@ -115,6 +115,14 @@ python backend/main.py
 
 ### Admin
 - **GET** `/api/admin/{user_id}`: Get a specific user from the database (admin only)
-- **GET** `/api/admin/all`: Get all users from the database (admin only)
-- **GET** `/api/admin/recently_active`: Get recently active users (admin only)
+- **GET** `/api/admin/all/`: Get all users from the database (admin only)
+- **GET** `/api/admin/recently_active/`: Get recently active users (admin only)
 - **DELETE** `/api/admin/{user_id}`: Delete a specific user from the database (admin only)
+
+
+## Further Improvements
+- **DB Connection**  : Connection Pool and Session Management
+- **API Documentation** : To add better documentation sor swagger
+- **Refactoring** : To change the way the different Instances of the Classes in database.py are created
+- **Authentication** : To add middleware for authentication, instead of doing it at every API end-point
+- **Revoked Tokens** : To implement auto truncate of `revoked_tokens` table after a certain interval
