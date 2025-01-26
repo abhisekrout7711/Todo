@@ -4,8 +4,8 @@ This is a simple Todo App built with FastAPI and SQLAlchemy. It allows users to 
 ## Libraries Used
 - FastAPI
 - SQLAlchemy
+- Psycopg2
 - Alembic
-- Passlib
 - Uvicorn
 - bcrypt
 - PyJWT
