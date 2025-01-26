@@ -120,7 +120,7 @@ python backend/main.py
 - **DELETE** `/api/admin/{user_id}`: Delete a specific user from the database (admin only)
 
 
-## Further Improvements
+# Further Improvements
 - **DB Connection**  : To manage `Connection Pool` and Improvise `Session Management`
 - **API Documentation** : To add better `Documentation` for better `representation in Swagger UI`
 - **Refactoring** : To change the way the different Instances of the Classes in `database.py` are created
