@@ -104,7 +104,7 @@ uvicorn backend.main:application --reload
 - **PUT** `/api/tag/{tag}`: Update a specific tag for the current user
 
 ### Admin
-- **GET** `/api/admin/id/{user_id}`: Get a specific user from the database (admin only)
-- **GET** `/api/admin/`: Get all users from the database (admin only)
-- **GET** `/api/admin/admin`: Get recently active users (admin only)
-- **DELETE** `/api/admin/admin/{user_id}`: Delete a specific user from the database (admin only)
+- **GET** `/api/admin/{user_id}`: Get a specific user from the database (admin only)
+- **GET** `/api/admin/all`: Get all users from the database (admin only)
+- **GET** `/api/admin/recently_active`: Get recently active users (admin only)
+- **DELETE** `/api/admin/{user_id}`: Delete a specific user from the database (admin only)
