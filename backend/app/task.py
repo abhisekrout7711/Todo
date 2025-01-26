@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException, APIRouter, Header
 # Local Imports
 from backend.auth_utils import get_current_user, raise_exception
 from backend.app.database import TaskData
-from backend.app.schemas import User, TaskStatus, TaskPriority
+from backend.app.schemas import TaskStatus, TaskPriority
 from backend.app.models import TaskResponse, TasksResponse
 
 router = APIRouter()
@@ -22,7 +22,7 @@ async def create_task(
     """Creates a new task for the current user"""
     response = TaskData().create_task(
         user_id=current_user["user"].user_id, title=title, description=description, 
-        tag_id=tag_id, due_date=due_date, priority=priority.value
+        tag_id=tag_id, due_date=due_date, priority=priority
     )
     if "error" in response:
         raise HTTPException(status_code=response["status_code"], detail=response["error"])
@@ -35,7 +35,7 @@ async def create_task(
 async def update_task(
         task_id: int, # required query parameter
         title: str=None, description: str=None, tag_id: int=None, 
-        due_date: str=None, priority:TaskPriority=TaskPriority.Medium, status: TaskStatus=TaskStatus.Pending,
+        due_date: str=None, priority: TaskPriority=None, status: TaskStatus=None,
         current_user: dict = Depends(get_current_user)
     ):
     """Updates the task with the new title, description, status and tag if the task exists"""
@@ -43,7 +43,7 @@ async def update_task(
     response = task_data_obj.update_task(
         user_id=current_user["user"].user_id, task_id=task_id, 
         title=title, description=description, tag_id=tag_id, 
-        due_date=due_date, priority=priority.value, status=status.value
+        due_date=due_date, priority=priority, status=status
     )
     if "error" in response:
         raise HTTPException(status_code=response["status_code"], detail=response["error"])

@@ -5,7 +5,7 @@ from datetime import datetime
 # Local Imports
 from config_file import DB_CONFIG
 from backend.app.utils import SessionManager, hash_password
-from backend.app.schemas import Admin, User, Tag, Task, RevokedToken
+from backend.app.schemas import Admin, User, Tag, Task, RevokedToken, User, TaskStatus, TaskPriority
 
 
 class AdminData:
@@ -217,7 +217,7 @@ class TaskData:
                 new_task.due_date = due_date
 
             if priority:
-                new_task.priority = priority
+                new_task.priority = priority.value
         
             self.session.add(new_task)
             self.session.commit()
@@ -229,7 +229,7 @@ class TaskData:
     
     def update_task(
             self, user_id: int, task_id: int, title: str=None, description: str=None,
-            tag_id: int=None, due_date: datetime=None, priority: str=None, status: str=None
+            tag_id: int=None, due_date: datetime=None, priority: TaskPriority=None, status: TaskStatus=None
         ) -> dict:
         """Updates the task with the new title, description, status and tag if the task exists"""
         
@@ -256,10 +256,10 @@ class TaskData:
                 task.due_date = due_date
             
             if priority:
-                task.priority = priority
+                task.priority = priority.value
             
             if status:
-                task.status = status
+                task.status = status.value
 
             self.session.commit()
 
