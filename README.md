@@ -128,3 +128,4 @@ python backend/main.py
 - **Revoked Tokens** : To implement auto truncate of `revoked_tokens` table after a certain interval
 - **Sensitive Info** : To save senstive info in `env variables` or some sort of `Secret Manager`
 - **Recycle Bin** : To implement a `Recycle Bin` to save deleted tasks for a certain period of time
+- **Logging** : To add a logger in order to track activities/issues on the application
