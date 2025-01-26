@@ -36,7 +36,7 @@ async def create_tag(tag: str, current_user: dict = Depends(get_current_user)):
     return response
 
 
-@router.delete("/delete/{tag}", status_code=200)
+@router.delete("/{tag}", status_code=200)
 @raise_exception
 async def delete_tag(tag: str, current_user: dict = Depends(get_current_user)):
     """Deletes a tag for the current user"""
@@ -47,7 +47,7 @@ async def delete_tag(tag: str, current_user: dict = Depends(get_current_user)):
     return response
 
 
-@router.put("/update/{tag}", status_code=200)
+@router.patch("/{tag}", status_code=200)
 @raise_exception
 async def update_tag(tag: str, new_tag: str, current_user: dict = Depends(get_current_user)):
     """Updates a tag for the current user"""

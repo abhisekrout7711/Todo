@@ -63,7 +63,7 @@ async def delete_task(task_id: int, current_user: dict = Depends(get_current_use
     return response
 
 
-@router.get("/id/{task_id}", response_model=TaskResponse, status_code=200)
+@router.get("/{task_id}", response_model=TaskResponse, status_code=200)
 @raise_exception
 async def get_task(task_id: int, current_user: dict = Depends(get_current_user)):
     """Returns a task for a given task_id if the task exists"""
@@ -88,7 +88,7 @@ async def get_tasks(current_user: dict = Depends(get_current_user)):
     return TasksResponse(task_count=len(tasks), tasks=tasks)
 
 
-@router.get("/tag", response_model=TasksResponse, status_code=200)
+@router.get("/tag_id", response_model=TasksResponse, status_code=200)
 @raise_exception
 async def get_tasks_by_tag_id(tag_id: int, current_user: dict = Depends(get_current_user)):
     """Retrieves all tasks for a given user filtered by a specific tag"""

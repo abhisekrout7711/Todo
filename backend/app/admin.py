@@ -13,7 +13,7 @@ from backend.app.models import UserResponse, UsersResponse
 router = APIRouter()
 
 # API Endpoints accessible only to admins
-@router.get("/id/{user_id}", response_model=UserResponse, status_code=200)
+@router.get("/{user_id}", response_model=UserResponse, status_code=200)
 @only_admin
 async def get_user(user_id: int, current_admin: Admin = Depends(get_current_admin)):
     """Retrieves a specific user from the database"""
@@ -25,7 +25,7 @@ async def get_user(user_id: int, current_admin: Admin = Depends(get_current_admi
         raise HTTPException(status_code=404, detail=f"User:{user_id} not found - {e}")
 
 
-@router.get("/", response_model=UsersResponse, status_code=200)
+@router.get("/all", response_model=UsersResponse, status_code=200)
 @only_admin
 async def get_all_users(current_admin: Admin = Depends(get_current_admin)):
     """Retrieves all users from the database"""
@@ -36,7 +36,7 @@ async def get_all_users(current_admin: Admin = Depends(get_current_admin)):
     return UsersResponse(user_count=len(users), users=users)
     
 
-@router.get("/admin", response_model=UsersResponse, status_code=200)
+@router.get("/recently_active", response_model=UsersResponse, status_code=200)
 @only_admin
 async def get_recently_active_users(updated_at: datetime, current_admin: Admin = Depends(get_current_admin)):
     """Retrieves all users those have been active recently"""
@@ -48,7 +48,7 @@ async def get_recently_active_users(updated_at: datetime, current_admin: Admin =
     
 
 
-@router.delete("/admin/{user_id}", status_code=200)
+@router.delete("/{user_id}", status_code=200)
 @only_admin
 async def delete_user(user_id: int, current_admin: Admin = Depends(get_current_admin)):
     """Deletes users from the database as an admin"""
