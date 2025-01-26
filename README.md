@@ -20,7 +20,7 @@ git clone https://github.com/abhisekrout7711/Todo
 
 ### Create a Conda environment and activate it
 ```bash
-conda create --name todo-app python=3.10 -y
+conda create --name todo-app python=3.8.2 -y
 conda activate todo-app
 ```
 
@@ -37,9 +37,19 @@ Update the database connection string in `alembic.ini`.
 alembic upgrade head
 ```
 
-### Run the application
+### Set Python Path to your Project's root directory
+```bash
+export PYTHONPATH=$PYTHONPATH:/Users/abhisekrout/Desktop/Todo
+```
+
+## Run the application 
+### Using Uvicorn
 ```bash
 uvicorn backend.main:application --reload
+```
+### Or Directly run main.py
+```bash
+python backend/main.py
 ```
 
 ## Usage

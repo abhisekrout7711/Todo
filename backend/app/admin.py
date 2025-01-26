@@ -25,7 +25,7 @@ async def get_user(user_id: int, current_admin: Admin = Depends(get_current_admi
         raise HTTPException(status_code=404, detail=f"User:{user_id} not found - {e}")
 
 
-@router.get("/all", response_model=UsersResponse, status_code=200)
+@router.get("/all/", response_model=UsersResponse, status_code=200)
 @only_admin
 async def get_all_users(current_admin: Admin = Depends(get_current_admin)):
     """Retrieves all users from the database"""
@@ -36,7 +36,7 @@ async def get_all_users(current_admin: Admin = Depends(get_current_admin)):
     return UsersResponse(user_count=len(users), users=users)
     
 
-@router.get("/recently_active", response_model=UsersResponse, status_code=200)
+@router.get("/recently_active/", response_model=UsersResponse, status_code=200)
 @only_admin
 async def get_recently_active_users(updated_at: datetime, current_admin: Admin = Depends(get_current_admin)):
     """Retrieves all users those have been active recently"""

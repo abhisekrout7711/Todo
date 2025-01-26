@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 # Local Imports
-from backend.app.database import AdminData, UserData, TokenData
+from backend.app.database import AdminData, UserData, TokenData, TaskData
 from backend.auth_utils import get_current_user, generate_token, raise_exception
 
 router = APIRouter()
@@ -35,6 +35,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         return {"access_token": token, "token_type": "bearer"}
         
     elif UserData().is_user(username=username, password=password):
+        TaskData().auto_update_task_status_to_overdue()
         return {"access_token": token, "token_type": "bearer"}
 
     else:
@@ -49,7 +50,7 @@ async def logout(current_user: dict=Depends(get_current_user)):
     return {"message": "Logout successful", "status_code": 200}
 
 
-@router.post("/delete", status_code=200)
+@router.delete("/delete", status_code=200)
 @raise_exception
 async def delete_user(current_user: dict=Depends(get_current_user)):
     """Deletes user and all associated data from the database"""
