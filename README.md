@@ -127,3 +127,4 @@ python backend/main.py
 - **Authentication** : To add `middleware for authentication`, instead of doing it at every API end-point
 - **Revoked Tokens** : To implement auto truncate of `revoked_tokens` table after a certain interval
 - **Sensitive Info** : To save senstive info in `env variables` or some sort of `Secret Manager`
+- **Recycle Bin** : To implement a `Recycle Bin` to save deleted tasks for a certain period of time
