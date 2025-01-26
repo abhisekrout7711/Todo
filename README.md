@@ -121,8 +121,9 @@ python backend/main.py
 
 
 ## Further Improvements
-- **DB Connection**  : Connection Pool and Session Management
-- **API Documentation** : To add better documentation sor swagger
-- **Refactoring** : To change the way the different Instances of the Classes in database.py are created
-- **Authentication** : To add middleware for authentication, instead of doing it at every API end-point
+- **DB Connection**  : To manage `Connection Pool` and Improvise `Session Management`
+- **API Documentation** : To add better `Documentation` for better `representation in Swagger UI`
+- **Refactoring** : To change the way the different Instances of the Classes in `database.py` are created
+- **Authentication** : To add `middleware for authentication`, instead of doing it at every API end-point
 - **Revoked Tokens** : To implement auto truncate of `revoked_tokens` table after a certain interval
+- **Sensitive Info** : To save senstive info in `env variables` or some sort of `Secret Manager`
