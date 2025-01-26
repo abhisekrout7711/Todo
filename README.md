@@ -46,7 +46,7 @@ export PYTHONPATH=$PYTHONPATH:/Users/abhisekrout/Desktop/Todo
 ```bash
 uvicorn backend.main:application --reload
 ```
-### Run the application (Simply running main.py)
+### Run the application (Simply run main.py)
 ```bash
 python backend/main.py
 ```
