@@ -69,7 +69,7 @@ async def get_task(task_id: int, current_user: dict = Depends(get_current_user))
     """Returns a task for a given task_id if the task exists"""
     task = TaskData().get_task(user_id=current_user["user"].user_id, task_id=task_id)
     if not task:
-        raise HTTPException(status_code=404, detail=f"Task:{task_id} not found for User:{current_user["user"].user_id}")
+        raise HTTPException(status_code=404, detail=f"Task:{task_id} not found for User:{current_user['user'].user_id}")
     
     return task
 
