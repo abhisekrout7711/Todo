@@ -357,7 +357,7 @@ class TokenData:
         """Revoke a JWT token"""
         try:
             with SessionManager(db_url=DB_URL) as session:
-                new_revoked_token = RevokedToken(jti=token)
+                new_revoked_token = RevokedToken(token=token)
                 session.add(new_revoked_token)
                 session.commit()
             
@@ -370,6 +370,6 @@ class TokenData:
     def check_if_token_revoked(self, token: str) -> bool:
         """Check if a token is revoked"""
         with SessionManager(db_url=DB_URL) as session:
-            data = session.query(RevokedToken).filter_by(jti=token).first()
+            data = session.query(RevokedToken).filter_by(token=token).first()
         
         return bool(data)
