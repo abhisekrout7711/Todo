@@ -7,35 +7,22 @@ from sqlalchemy.orm import sessionmaker, Session
 
 
 class SessionManager:
-    # Class for handling database sessions
-    def __init__(self, username: str, password: str, host: str, port: str, database: str):
-        self.engine = None
-        self.session = None
-        self.__db_url = f"postgresql://{username}:{password}@{host}:{port}/{database}"
+    def __init__(self, db_url):
+        self.engine = create_engine(db_url, pool_size=5, max_overflow=10)
+        self.Session = sessionmaker(bind=self.engine)
 
-    def get_session(self) -> Session:
-        """Returns the session object if it exists, otherwise creates a new session and returns it"""
-        if not self.session:
-            # Create a new session if there is no existing session
-            try:
-                engine = create_engine(self.__db_url)
-                self.session = sessionmaker(bind=engine)()
-            
-            except Exception as e:
-                raise RuntimeError(f"Session creation failed - {e}") from e
-            
+    def __enter__(self):
+        # Create and return a session when the context is entered
+        self.session = self.Session()
         return self.session
-    
-    def close_session(self):
-        """Closes the database session and disposes the engine"""
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Cleanup session and engine only if session is not None
         if self.session:
             self.session.close()
-            self.session = None
-        
         if self.engine:
             self.engine.dispose()
-            self.engine = None
-    
+
 
 def hash_password(password: str):
         """Hashes and returns the user's password deterministically"""
