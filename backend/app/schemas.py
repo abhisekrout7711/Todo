@@ -68,6 +68,7 @@ class Task(Base):
     task_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
     tag_id = Column(Integer, ForeignKey('tags.tag_id', ondelete='SET NULL'), nullable=True)
+    tag = Column(String(255), nullable=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(Enum(TaskStatus), default=TaskStatus.Pending.value, nullable=False)
@@ -90,4 +91,4 @@ class RevokedToken(Base):
     __tablename__ = 'revoked_tokens'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    jti = Column(String(255), nullable=False)
+    token = Column(String(255), nullable=False)
