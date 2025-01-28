@@ -96,6 +96,7 @@ python backend/main.py
 - **POST** `/api/user/login`: Login with the registered user
 - **POST** `/api/user/logout`: Logout the current user
 - **POST** `/api/user/delete`: Delete the current user
+- **PATCH** `/api/user/update` : Update the username/password of the current user
 
 ### Task
 - **POST** `/api/task/create`: Create a new task
