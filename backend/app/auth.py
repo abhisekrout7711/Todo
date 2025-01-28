@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 # Local Imports
 from backend.app.database import AdminData, UserData, TokenData, TaskData
 from backend.auth_utils import get_current_user, generate_token, raise_exception
+from backend.app.models import UpdateUserRequest
 
 router = APIRouter()
 
@@ -40,6 +41,18 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+
+@router.patch("/update", status_code=200)
+@raise_exception
+async def update_user(request: UpdateUserRequest, current_user: dict=Depends(get_current_user)):
+    """Updates the username or password of the current user"""
+    response = UserData().update_user(user_id=current_user["user"].user_id, new_username=request.new_username, new_password=request.new_password)
+    TokenData().revoke_token(current_user["token"])
+    if "error" in response:
+        raise HTTPException(status_code=response["status_code"], detail=response["error"])
+    
+    return {"message": "User details updated successfully. Please login again.", "status_code": 200}
 
 
 @router.post("/logout", status_code=200)

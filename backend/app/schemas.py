@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey, Enum, func, PrimaryKeyConstraint
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, DATE, ForeignKey, Enum, func
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+
 import enum
 
 Base = declarative_base()
@@ -67,15 +69,15 @@ class Task(Base):
 
     task_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
-    tag_id = Column(Integer, ForeignKey('tags.tag_id', ondelete='SET NULL'), nullable=True)
-    tag = Column(String(255), nullable=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
+    tag_id = Column(Integer, ForeignKey('tags.tag_id', ondelete='SET NULL'), nullable=True)
+    tag = Column(String(255), nullable=True)
+    due_date = Column(DATE, nullable=True)
+    priority = Column(Enum(TaskPriority), default=TaskPriority.Medium.value, nullable=False)
     status = Column(Enum(TaskStatus), default=TaskStatus.Pending.value, nullable=False)
-    due_date = Column(TIMESTAMP, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
-    priority = Column(Enum(TaskPriority), default=TaskPriority.Medium.value, nullable=False)
 
     # Relationship to the User model
     user = relationship('User', back_populates='tasks')
