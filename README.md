@@ -129,3 +129,8 @@ python backend/main.py
 - **Sensitive Info** : To save senstive info in `env variables` or some sort of `Secret Manager`
 - **Recycle Bin** : To implement a `Recycle Bin` to save deleted tasks for a certain period of time
 - **Logging** : To add a logger in order to track activities/issues on the application
+
+# Improvements Done
+- **DB Connection** : DB Connection Instances (engine) and Sessions are handled within context manager, ensuring they are closed and no unnecessary open channels causing db overhead
+- **Update User** : Added feature to update username and password
+- **Refactoring** : The code base is now lot more consistent, cleaner and readable
