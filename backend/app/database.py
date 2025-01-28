@@ -1,6 +1,6 @@
 # Standard Imports
 from typing import Union, List
-from datetime import datetime
+from datetime import datetime, date
 
 # Local Imports
 from config_file import DB_URL
@@ -96,7 +96,7 @@ class UserData:
         
         try:
             with SessionManager(db_url=DB_URL) as session:
-                session.merge(user)
+                session.add(user)
                 session.delete(user)
                 session.commit()
 
@@ -120,15 +120,10 @@ class UserData:
 
 class TagData:
     """Class to read and write data from/to the tags table"""   
-    def get_tag(self, user_id: int, tag_id: int=None, tag: str=None) -> Tag:
-        """Return tag for a user filter by tag_id if tag exists"""
+    def get_tag(self, user_id: int, tag: str=None) -> Tag:
+        """Returns tag object for a user filter by tag"""
         with SessionManager(db_url=DB_URL) as session:
-            if tag_id:
-                tag_ = session.query(Tag).filter_by(user_id=user_id, tag_id=tag_id).first()
-            
-            elif tag:
-                tag_ = session.query(Tag).filter_by(user_id=user_id, tag=tag).first()
-            
+            tag_ = session.query(Tag).filter_by(user_id=user_id, tag=tag).first()
             return tag_
     
     def get_all_tags(self, user_id: int) -> List[Tag]:
@@ -161,7 +156,6 @@ class TagData:
             return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
         
         try:
-            
             if new_tag:
                 tag_.tag = new_tag
             
@@ -181,11 +175,23 @@ class TagData:
             return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
     
         try:
-            with SessionManager(db_url=DB_URL) as session:
-                session.merge(tag_)
-                session.delete(tag_)
-                session.commit()
             
+            # Delete tag from tags table for a user
+            with SessionManager(db_url=DB_URL) as session:
+                # print(session.identity_map.values()) # This will print all objects attached to the session
+                # session.expunge_all() # This will expunge all objects attached to the session
+                # session.merge(tag_) # Ideally we should merge(tag_) here, as tag_ is now attached to no session, but calling this thows an error
+                # Something terrible is happening here
+                session.add(tag_)
+                session.delete(tag_)
+            
+                # Delete tag from the tasks which uses the same tag for a user
+                tasks = TaskData().get_tasks_by_tag(user_id=user_id, tag=tag)
+                for task in tasks:
+                    session.add(task)
+                    task.tag = None
+                session.commit()
+
             return {"message": "Tag deleted successfully", "status_code": 200}
         
         except Exception as e:
@@ -194,34 +200,38 @@ class TagData:
 
 class TaskData:
     """Class to read and write data from/to the tasks table"""
-    def create_task(self, user_id: int, title: str, description: str=None, tag_id: int=None, due_date: datetime=None, priority: str=None) -> dict:
+    def create_task(
+            self, user_id: int, title: str, description: str=None, 
+            tag: str=None, due_date: date=None, priority: str=None
+        ) -> dict:
         """Creates a new task for a user"""
         user = UserData().get_user(user_id=user_id)
         if not user:
             return {"error": f"User:{user_id} doesn't exist", "status_code": 404}
 
         try:
+            new_task = Task(user_id=user_id, title=title)
+            
+            # Optional Parameters
+            if description:
+                new_task.description = description
+
+            if tag:
+                try:
+                    tag_ = TagData().get_tag(user_id=user_id, tag=tag)
+                    new_task.tag = tag
+                    new_task.tag_id = tag_.tag_id
+            
+                except AttributeError as e:
+                    return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
+            
+            if due_date:
+                new_task.due_date = due_date
+
+            if priority:
+                new_task.priority = priority
+            
             with SessionManager(db_url=DB_URL) as session:
-                new_task = Task(user_id=user_id, title=title)
-                
-                # Optional Parameters
-                if description:
-                    new_task.description = description
-
-                if tag_id:
-                    try:
-                        tag_data = TagData().get_tag(user_id=user_id, tag_id=tag_id)
-                        new_task.tag_id = tag_data.tag_id
-                
-                    except AttributeError as e:
-                        return {"error": f"Tag:{tag_id} doesn't exist for User:{user_id}", "status_code": 404}
-                
-                if due_date:
-                    new_task.due_date = due_date
-
-                if priority:
-                    new_task.priority = priority.value
-                
                 session.add(new_task)
                 session.commit()
 
@@ -232,10 +242,9 @@ class TaskData:
     
     def update_task(
             self, user_id: int, task_id: int, title: str=None, description: str=None,
-            tag_id: int=None, due_date: datetime=None, priority: TaskPriority=None, status: TaskStatus=None
+            tag: str=None, due_date: date=None, priority: str=None, status: str=None
         ) -> dict:
         """Updates the task with the new title, description, status and tag if the task exists"""
-        
         task = self.get_task(user_id=user_id, task_id=task_id)
         if not task:
             return {"error": f"Task:{task_id} doesn't exist for User:{user_id}", "status_code": 404}
@@ -247,22 +256,23 @@ class TaskData:
             if description:
                 task.description = description
             
-            if tag_id:
+            if tag:
                 try:
-                    tag_data = TagData().get_tag(user_id=user_id, tag_id=tag_id)
+                    tag_data = TagData().get_tag(user_id=user_id, tag=tag)
+                    task.tag = tag
                     task.tag_id = tag_data.tag_id
 
                 except AttributeError as e:
-                    return {"error": f"Tag:{tag_id} doesn't exist for User:{user_id}", "status_code": 404}
+                    return {"error": f"Tag:{tag} doesn't exist for User:{user_id}", "status_code": 404}
             
             if due_date:
                 task.due_date = due_date
             
             if priority:
-                task.priority = priority.value
+                task.priority = priority
             
             if status:
-                task.status = status.value
+                task.status = status
 
             with SessionManager(db_url=DB_URL) as session:
                 session.merge(task)
@@ -281,7 +291,7 @@ class TaskData:
         
         try:
             with SessionManager(db_url=DB_URL) as session:
-                session.merge(task)
+                session.add(task)
                 session.delete(task)
                 session.commit()
             
@@ -300,13 +310,12 @@ class TaskData:
         """Returns all tasks for a user"""
         with SessionManager(db_url=DB_URL) as session:
             tasks = session.query(Task).filter_by(user_id=user_id).all()
-            breakpoint()
             return tasks
     
-    def get_tasks_by_tag_id(self, user_id: int, tag_id: int) -> List[Task]:
+    def get_tasks_by_tag(self, user_id: int, tag: str) -> List[Task]:
         """Returns all tasks for a user for a specific tag"""
         with SessionManager(db_url=DB_URL) as session:
-            tasks = session.query(Task).filter_by(user_id=user_id, tag_id=tag_id).all()
+            tasks = session.query(Task).filter_by(user_id=user_id, tag=tag).all()
             return tasks
     
     def get_tasks_by_status(self, user_id: int, status: str) -> List[Task]:

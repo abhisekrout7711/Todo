@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException, APIRouter, Header
 from backend.auth_utils import get_current_user, raise_exception
 from backend.app.database import TaskData
 from backend.app.schemas import TaskStatus, TaskPriority
-from backend.app.models import TaskResponse, TasksResponse
+from backend.app.models import TaskResponse, TasksResponse, CreateTaskRequest, UpdateTaskRequest
 
 router = APIRouter()
 
@@ -16,14 +16,16 @@ router = APIRouter()
 @router.post("/create", status_code=201)
 @raise_exception
 async def create_task(
-        title: str, description: str=None, tag_id: int=None, due_date: datetime=None, priority: TaskPriority=TaskPriority.Medium, 
+        request: CreateTaskRequest,
         current_user: dict = Depends(get_current_user)
     ):
     """Creates a new task for the current user"""
+    priority = request.priority.value if request.priority else None
     response = TaskData().create_task(
-        user_id=current_user["user"].user_id, title=title, description=description, 
-        tag_id=tag_id, due_date=due_date, priority=priority
+        user_id=current_user["user"].user_id, title=request.title, description=request.description, 
+        tag=request.tag, due_date=request.due_date, priority=priority
     )
+    
     if "error" in response:
         raise HTTPException(status_code=response["status_code"], detail=response["error"])
     
@@ -33,17 +35,17 @@ async def create_task(
 @router.patch("/{task_id}", status_code=200)
 @raise_exception
 async def update_task(
-        task_id: int, # required query parameter
-        title: str=None, description: str=None, tag_id: int=None, 
-        due_date: str=None, priority: TaskPriority=None, status: TaskStatus=None,
+        task_id: int,
+        request: UpdateTaskRequest,
         current_user: dict = Depends(get_current_user)
     ):
     """Updates the task with the new title, description, status and tag if the task exists"""
-    task_data_obj = TaskData()
-    response = task_data_obj.update_task(
-        user_id=current_user["user"].user_id, task_id=task_id, 
-        title=title, description=description, tag_id=tag_id, 
-        due_date=due_date, priority=priority, status=status
+    priority = request.priority.value if request.priority else None
+    status = request.status.value if request.status else None
+    response = TaskData().update_task(
+        user_id=current_user["user"].user_id, task_id=task_id, title=request.title, 
+        description=request.description, tag=request.tag, due_date=request.due_date, 
+        priority=priority, status=status
     )
     if "error" in response:
         raise HTTPException(status_code=response["status_code"], detail=response["error"])
@@ -86,11 +88,11 @@ async def get_tasks(current_user: dict = Depends(get_current_user)):
     return TasksResponse(task_count=len(tasks), tasks=tasks)
 
 
-@router.get("/tag_id/{tag_id}", response_model=TasksResponse, status_code=200)
+@router.get("/tag/{tag}", response_model=TasksResponse, status_code=200)
 @raise_exception
-async def get_tasks_by_tag_id(tag_id: int, current_user: dict = Depends(get_current_user)):
+async def get_tasks_by_tag(tag: str, current_user: dict = Depends(get_current_user)):
     """Retrieves all tasks for a given user filtered by a specific tag"""
-    tasks = TaskData().get_tasks_by_tag_id(user_id=current_user["user"].user_id, tag_id=tag_id)
+    tasks = TaskData().get_tasks_by_tag(user_id=current_user["user"].user_id, tag=tag)
     if not tasks:
         return TasksResponse(task_count=0,tasks=[])
     
