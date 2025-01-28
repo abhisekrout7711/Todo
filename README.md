@@ -131,6 +131,6 @@ python backend/main.py
 - **Logging** : To add a logger in order to track activities/issues on the application
 
 # Improvements Done
-- **DB Connection** : DB Connection Instances (engine) and Sessions are handled within context manager, ensuring they are closed and no un-necessary open channels
+- **DB Connection** : DB Connection Instances (engine) and Sessions are handled within context manager, ensuring they are closed and no unnecessary open channels causing db overhead
 - **Update User** : Added feature to update username and password
 - **Refactoring** : The code base is now lot more consistent, cleaner and readable
