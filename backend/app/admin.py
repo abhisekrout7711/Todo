@@ -5,7 +5,7 @@ from datetime import datetime
 from fastapi import Depends, HTTPException, APIRouter
 
 # Local Imports
-from backend.auth_utils import get_current_admin, only_admin
+from backend.app.auth_utils import get_current_admin, only_admin
 from backend.app.database import UserData
 from backend.app.schemas import Admin
 from backend.app.models import UserResponse, UsersResponse

@@ -5,7 +5,7 @@ from datetime import datetime
 from fastapi import Depends, HTTPException, APIRouter
 
 # Local Imports
-from backend.auth_utils import get_current_user, raise_exception
+from backend.app.auth_utils import get_current_user, raise_exception
 from backend.app.database import TagData
 from backend.app.schemas import User
 from backend.app.models import TagResponse, TagsResponse

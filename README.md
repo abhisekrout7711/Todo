@@ -49,7 +49,7 @@ uvicorn backend.main:application --reload
 ```
 ### Or Directly run main.py
 ```bash
-python backend/main.py
+python backend/app/main.py
 ```
 
 ## Usage

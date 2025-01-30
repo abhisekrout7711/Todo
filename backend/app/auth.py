@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 # Local Imports
 from backend.app.database import AdminData, UserData, TokenData, TaskData
-from backend.auth_utils import get_current_user, generate_token, raise_exception
+from backend.app.auth_utils import get_current_user, generate_token, raise_exception
 from backend.app.models import UpdateUserRequest
 
 router = APIRouter()
